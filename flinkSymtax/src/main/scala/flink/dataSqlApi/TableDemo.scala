@@ -24,9 +24,15 @@ object TableDemo {
     fbTableEnv.registerTable("table1",expr)
     fbTableEnv.sqlQuery("select * from table1").toDataSet[Row].print()
     fbTableEnv.scan("table1").select("word").toDataSet[Row].print()
-    //register tableSource
-    CsvTableSource.builder().path("D:\\ReciveFile\\项目4-store\\电商文档\\1.csv").field("ss",Types.BOOLEAN)
-    new CsvTableSource("D:\\ReciveFile\\项目4-store\\电商文档\\1.csv",Array("name"),Array(Types.STRING))
+    //register tableSource,read csv file，convert to table
+    val tableSource = CsvTableSource.builder()
+      .path("D:\\ReciveFile\\项目4-store\\电商文档\\1.csv")
+      .field("customer_id",Types.STRING)
+      .build()
+    fbTableEnv.registerTableSource("csvTable",tableSource)
+    fbTableEnv.sqlQuery("select * from csvTable")
+      .toDataSet[Row]
+      .print()
   }
   case class WC(word: String, frequency: Long)
 }
