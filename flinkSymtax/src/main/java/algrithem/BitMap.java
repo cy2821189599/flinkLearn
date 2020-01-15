@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class BitMap {
     public static void main(String[] args) {
         char[] bitMap = new char[1000000000];
-        for ( long i = 1; i < 4000000000L; i++ ) {
+        for ( long i = 1; i < 4000000001L; i++ ) {
             long index = i / 8;
             long tmp = i & 7;
             long val = 1 << tmp;
@@ -28,12 +28,15 @@ public class BitMap {
                 b = false;
                 System.out.println( "请输入0-4000000000以内的数" );
             } else if ( num > 4000000000L ) {
-                System.out.println("不存在"+num);
+                System.out.println( "不存在" + num );
             } else {
                 int index = (int) (num / 8);
                 char flag = '0';
                 int tmp = (int) num & 7;
                 String binaryString = Integer.toBinaryString( bitMap[index] );
+                for ( int i = binaryString.length(); i < 8; i++ ) {
+                    binaryString = "0" + binaryString;
+                }
                 flag = binaryString.charAt( 7 - tmp );
                 System.out.println( flag == '1' ? "存在" + num : "不存在" + num );
             }
