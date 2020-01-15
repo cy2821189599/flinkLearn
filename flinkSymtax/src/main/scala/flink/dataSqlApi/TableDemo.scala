@@ -13,10 +13,10 @@ object TableDemo {
     import org.apache.flink.table.api.scala._
 
     val fbEnv = ExecutionEnvironment.getExecutionEnvironment
-    val fbTableEnv: BatchTableEnvironment = BatchTableEnvironment.create(fbEnv)
+    val tableEnv: BatchTableEnvironment = BatchTableEnvironment.create(fbEnv)
     // DataSet->table->DataSet
     val input: DataSet[WC] = fbEnv.fromElements(WC("hello", 1), WC("hello", 1), WC("ciao", 1))
-    val expr: Table = input.toTable(fbTableEnv)
+    val expr: Table = input.toTable(tableEnv)
     val result = expr
       .groupBy('word)
       .select('word, 'frequency.sum as 'frequency)
@@ -24,28 +24,30 @@ object TableDemo {
       .toDataSet[WC]
     result.print()
     //register table
-    fbTableEnv.registerTable("table1",expr)
-    fbTableEnv.sqlQuery("select * from table1").toDataSet[Row].print()
-    fbTableEnv.scan("table1").select("word").toDataSet[Row].print()
+    tableEnv.registerTable("table1", expr)
+    tableEnv.sqlQuery("select * from table1").toDataSet[Row].print()
+    //scan 就是select * from table1
+    tableEnv.scan("table1").select("word").toDataSet[Row].print()
     //register tableSource,read csv file，convert to table
     //方法一
     val tableSource = CsvTableSource.builder()
       .path("D:\\temp\\data\\1.csv")
-      .field("customer_id",Types.STRING)
+      .field("customer_id", Types.STRING)
       .build()
     //创建tableSource的方法二
     val csvTableSource = new CsvTableSource("D:\\temp\\data\\1.csv", Array("customer_id"), Array[TypeInformation[_]]
-      (Types
-      .STRING))
-    fbTableEnv.registerTableSource("csvTable",csvTableSource)
-    val table = fbTableEnv.sqlQuery("select * from csvTable")
-//      .toDataSet[Row]
-//      .print()
+      (Types.STRING))
+    tableEnv.registerTableSource("csvTable", csvTableSource)
+    val table = tableEnv.sqlQuery("select * from csvTable")
+    //      .toDataSet[Row]
+    //      .print()
     //tableSink
-    val tableSink = new CsvTableSink("D:\\temp\\data\\csvsink.csv","|",1,WriteMode.OVERWRITE)
-    fbTableEnv.registerTableSink("csvTableSink",Array("customer_id"),Array[TypeInformation[_]](Types.STRING),tableSink)
+    val tableSink = new CsvTableSink("D:\\temp\\data\\csvsink.csv", "|", 1, WriteMode.OVERWRITE)
+    tableEnv.registerTableSink("csvTableSink", Array("customer_id"), Array[TypeInformation[_]](Types.STRING), tableSink)
     table.insertInto("csvTableSink")
     table.toDataSet[Row].print()
   }
+
   case class WC(word: String, frequency: Long)
+
 }
