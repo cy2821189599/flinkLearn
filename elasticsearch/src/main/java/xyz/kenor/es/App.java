@@ -184,7 +184,7 @@ public class App {
         SearchResponse searchResponse = client.prepareSearch( "blog" )
                 .setTypes( "article" ).setQuery( QueryBuilders.matchAllQuery() )
                 .get();
-        SearchHits hits = searchResponse.getHits();
+        SearchHits hits = searchResponse.getHits(); //命中的数量
         System.out.println( "查询结果为：" + hits.getTotalHits() );
         Iterator<SearchHit> iterator = hits.iterator();
         while ( iterator.hasNext() ) {
@@ -233,6 +233,20 @@ public class App {
                 .get();
         SearchHits hits = response.getHits();
         System.out.println( "查询结果：" + hits.getTotalHits() );
+        Iterator<SearchHit> iterator = hits.iterator();
+        while ( iterator.hasNext() ) {
+            SearchHit next = iterator.next();
+            System.out.println( next.getSourceAsString() );
+        }
+    }
+
+    //模糊查询
+    @Test
+    public void fuzzyQuery(){
+        SearchResponse response = client.prepareSearch( "blog" )
+                .setQuery( QueryBuilders.fuzzyQuery( "title", "github" ) ).get();
+        SearchHits hits = response.getHits();
+        System.out.println( "查询结果为："+hits.getTotalHits() );
         Iterator<SearchHit> iterator = hits.iterator();
         while ( iterator.hasNext() ) {
             SearchHit next = iterator.next();
