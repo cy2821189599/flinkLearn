@@ -7,6 +7,7 @@ import org.elasticsearch.action.get.MultiGetItemResponse;
 import org.elasticsearch.action.get.MultiGetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.transport.TransportClient;
@@ -14,6 +15,9 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.junit.After;
 import org.junit.Before;
@@ -127,10 +131,10 @@ public class App {
         UpdateRequest updateRequest = new UpdateRequest( "blog", "article", "2" );
         updateRequest.doc(
                 XContentFactory.jsonBuilder().startObject()
-                .field( "id", "2" )
-                .field( "title", "github" )
-                .field( "content", "代码托管仓库" )
-                .endObject()
+                        .field( "id", "2" )
+                        .field( "title", "github" )
+                        .field( "content", "代码托管仓库" )
+                        .endObject()
         );
         UpdateResponse updateResponse = client.update( updateRequest ).get();
         printMsg( updateResponse );
@@ -163,9 +167,24 @@ public class App {
 
     //删除文档
     @Test
-    public void deleteDoc(){
+    public void deleteDoc() {
         DeleteResponse deleteResponse = client.prepareDelete( "blog", "article", "5" ).get();
         printMsg( deleteResponse );
+    }
+
+    //查询所有文档
+    @Test
+    public void queryMatchAll() {
+        SearchResponse searchResponse = client.prepareSearch( "blog" ).setTypes( "article" ).setQuery( QueryBuilders.matchAllQuery() ).get();
+        SearchHits hits = searchResponse.getHits();
+        System.out.println( "查询结果为：" + hits.getTotalHits() );
+        Iterator<SearchHit> iterator = hits.iterator();
+        while ( iterator.hasNext() ) {
+            SearchHit next = iterator.next();
+            System.out.println( next.getSourceAsString() );
+        }
+
+
     }
 
     public void printMsg(DocWriteResponse response) {
