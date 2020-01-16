@@ -199,6 +199,22 @@ public class App {
         }
     }
 
+    //词条查询
+    @Test
+    public void termQuery(){
+        SearchResponse response = client.prepareSearch( "blog" ).
+                setQuery( QueryBuilders.termQuery( "content", "百" ) )
+                .get();
+        SearchHits hits = response.getHits();
+        System.out.println("查询结果为："+hits.getTotalHits());
+        Iterator<SearchHit> iterator = hits.iterator();
+        while ( iterator.hasNext() ) {
+            SearchHit next = iterator.next();
+            System.out.println(next.getSourceAsString());
+        }
+
+    }
+
     public void printMsg(DocWriteResponse response) {
         //打印返回值
         System.out.println( "索引：" + response.getIndex() );
