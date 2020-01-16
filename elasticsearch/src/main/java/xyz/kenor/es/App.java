@@ -1,6 +1,7 @@
 package xyz.kenor.es;
 
 import org.elasticsearch.action.DocWriteResponse;
+import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.get.MultiGetItemResponse;
@@ -10,6 +11,7 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
+import org.elasticsearch.client.Requests;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -242,16 +244,63 @@ public class App {
 
     //模糊查询
     @Test
-    public void fuzzyQuery(){
+    public void fuzzyQuery() {
         SearchResponse response = client.prepareSearch( "blog" )
                 .setQuery( QueryBuilders.fuzzyQuery( "title", "github" ) ).get();
         SearchHits hits = response.getHits();
-        System.out.println( "查询结果为："+hits.getTotalHits() );
+        System.out.println( "查询结果为：" + hits.getTotalHits() );
         Iterator<SearchHit> iterator = hits.iterator();
         while ( iterator.hasNext() ) {
             SearchHit next = iterator.next();
             System.out.println( next.getSourceAsString() );
         }
+    }
+
+    //创建mapping,事先必须先建立索引
+    @Test
+    public void createMapping() throws IOException, ExecutionException, InterruptedException {
+        //内部为json结构
+        /**
+         * {
+         * 	"mappings": {
+         * 		"article": {
+         * 			"properties": {
+         * 				"id": {
+         * 					"type": "text",
+         * 					"fields": {
+         * 						"keyword": {
+         * 							"ignore_above": 256,
+         * 							"type": "keyword"
+         *                                  }
+         *                             }
+         *                     }
+         *                      }
+         *                  }
+         *              }
+         * }
+         */
+        XContentBuilder xContentBuilder =
+                XContentFactory.jsonBuilder()
+                .startObject()
+                    .startObject( "article" )
+                        .startObject( "properties" )
+                            .startObject( "id" )
+                                .field( "type", "string" )
+                                .field( "store", "yes" )
+                            .endObject()
+                            .startObject( "title" )
+                                .field( "type", "string" )
+                                .field( "store", "yes" )
+                            .endObject()
+                            .startObject( "content" )
+                                .field( "type", "string" )
+                                .field( "store", "yes" )
+                            .endObject()
+                        .endObject()
+                    .endObject()
+            .endObject();
+        PutMappingRequest mapping = Requests.putMappingRequest( "blog4" ).type( "article" ).source( xContentBuilder );
+        client.admin().indices().putMapping( mapping ).get();
     }
 
     public void printMsg(DocWriteResponse response) {
