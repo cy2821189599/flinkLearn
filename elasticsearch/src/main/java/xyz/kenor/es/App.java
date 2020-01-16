@@ -71,7 +71,10 @@ public class App {
         String json = "{" + "\"id\":\"1\"," + "\"title\":\"基于Lucene的检索服务\"," +
                 "\"content\":\"它提供一个分布式多用户能力的全文搜索引擎，基于RESTFUL web接口\"" + "}";
         //创建
-        IndexResponse response = client.prepareIndex( "blog", "article", "1" ).setSource( json ).execute().actionGet();
+        IndexResponse response = client.prepareIndex( "blog", "article", "1" )
+                .setSource( json )
+                .execute()
+                .actionGet();
         printMsg( response );
     }
 
@@ -83,7 +86,10 @@ public class App {
         json.put( "title", "jackChen" );
         json.put( "content", "板砖" );
 
-        IndexResponse response = client.prepareIndex( "blog", "article", "2" ).setSource( json ).execute().actionGet();
+        IndexResponse response = client.prepareIndex( "blog", "article", "2" )
+                .setSource( json )
+                .execute()
+                .actionGet();
         printMsg( response );
     }
 
@@ -175,7 +181,9 @@ public class App {
     //查询所有文档
     @Test
     public void queryMatchAll() {
-        SearchResponse searchResponse = client.prepareSearch( "blog" ).setTypes( "article" ).setQuery( QueryBuilders.matchAllQuery() ).get();
+        SearchResponse searchResponse = client.prepareSearch( "blog" )
+                .setTypes( "article" ).setQuery( QueryBuilders.matchAllQuery() )
+                .get();
         SearchHits hits = searchResponse.getHits();
         System.out.println( "查询结果为：" + hits.getTotalHits() );
         Iterator<SearchHit> iterator = hits.iterator();
@@ -187,11 +195,12 @@ public class App {
 
     //字段分词查询
     @Test
-    public void queryString(){
+    public void queryString() {
         SearchResponse response =
-                client.prepareSearch( "blog" ).setQuery( QueryBuilders.queryStringQuery( "小说" ) ).get();
+                client.prepareSearch( "blog" )
+                        .setQuery( QueryBuilders.queryStringQuery( "小说" ) ).get();
         SearchHits hits = response.getHits();
-        System.out.println( "查询结果为："+hits.getTotalHits() );
+        System.out.println( "查询结果为：" + hits.getTotalHits() );
         Iterator<SearchHit> iterator = hits.iterator();
         while ( iterator.hasNext() ) {
             SearchHit next = iterator.next();
@@ -201,18 +210,34 @@ public class App {
 
     //词条查询
     @Test
-    public void termQuery(){
+    public void termQuery() {
         SearchResponse response = client.prepareSearch( "blog" ).
                 setQuery( QueryBuilders.termQuery( "content", "百" ) )
                 .get();
         SearchHits hits = response.getHits();
-        System.out.println("查询结果为："+hits.getTotalHits());
+        System.out.println( "查询结果为：" + hits.getTotalHits() );
         Iterator<SearchHit> iterator = hits.iterator();
         while ( iterator.hasNext() ) {
             SearchHit next = iterator.next();
-            System.out.println(next.getSourceAsString());
+            System.out.println( next.getSourceAsString() );
         }
+    }
 
+    //通配符查询
+    @Test
+    public void wildQuery() {
+        SearchResponse response = client.prepareSearch( "blog" )
+                //* 表示任意个字符
+                //？ 表示单个字符
+                .setQuery( QueryBuilders.wildcardQuery( "content", "*擎*" ) )
+                .get();
+        SearchHits hits = response.getHits();
+        System.out.println( "查询结果：" + hits.getTotalHits() );
+        Iterator<SearchHit> iterator = hits.iterator();
+        while ( iterator.hasNext() ) {
+            SearchHit next = iterator.next();
+            System.out.println( next.getSourceAsString() );
+        }
     }
 
     public void printMsg(DocWriteResponse response) {
