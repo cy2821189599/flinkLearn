@@ -1,2 +1,2 @@
 # flinkLearn
-start learning flink,going on.
+start learning flink, going on.
