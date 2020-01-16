@@ -183,8 +183,20 @@ public class App {
             SearchHit next = iterator.next();
             System.out.println( next.getSourceAsString() );
         }
+    }
 
-
+    //字段分词查询
+    @Test
+    public void queryString(){
+        SearchResponse response =
+                client.prepareSearch( "blog" ).setQuery( QueryBuilders.queryStringQuery( "小说" ) ).get();
+        SearchHits hits = response.getHits();
+        System.out.println( "查询结果为："+hits.getTotalHits() );
+        Iterator<SearchHit> iterator = hits.iterator();
+        while ( iterator.hasNext() ) {
+            SearchHit next = iterator.next();
+            System.out.println( next.getSourceAsString() );
+        }
     }
 
     public void printMsg(DocWriteResponse response) {
