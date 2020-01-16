@@ -1,6 +1,7 @@
 package xyz.kenor.es;
 
 import org.elasticsearch.action.DocWriteResponse;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.get.MultiGetItemResponse;
 import org.elasticsearch.action.get.MultiGetResponse;
@@ -27,7 +28,7 @@ import java.util.concurrent.ExecutionException;
 
 /**
  * @ClassName App
- * @Description TODO
+ * @Description elasticsearch
  * @Author JackChen
  * @Date 2020/1/16 10:01
  * @Version 1.0
@@ -158,6 +159,13 @@ public class App {
         updateRequest.upsert( indexRequest );
         UpdateResponse updateResponse = client.update( updateRequest ).get();
         printMsg( updateResponse );
+    }
+
+    //删除文档
+    @Test
+    public void deleteDoc(){
+        DeleteResponse deleteResponse = client.prepareDelete( "blog", "article", "5" ).get();
+        printMsg( deleteResponse );
     }
 
     public void printMsg(DocWriteResponse response) {
