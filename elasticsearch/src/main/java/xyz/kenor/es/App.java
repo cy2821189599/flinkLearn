@@ -2,6 +2,8 @@ package xyz.kenor.es;
 
 import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
+import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.get.MultiGetItemResponse;
@@ -116,7 +118,7 @@ public class App {
         System.out.println( response.getSourceAsString() );
     }
 
-    //多个条件查询
+    //多个条件查询（批量查询）
     @Test
     public void queryMultiIndex() {
         MultiGetResponse responses = client.prepareMultiGet().add( "blog", "article", "3" )
@@ -131,6 +133,27 @@ public class App {
                 System.out.println( response.getSourceAsString() );
             }
         }
+    }
+
+    // 批量添加文档
+    @Test
+    public void bulkAddDoc() throws IOException {
+        //批量请求
+        BulkRequestBuilder bulkRequestBuilder = client.prepareBulk();
+        bulkRequestBuilder.add( client.prepareIndex( "index", "fulltext", "5" )
+                .setSource( XContentFactory.jsonBuilder()
+                        .startObject()
+                        .field( "content", "夜空中最亮的星" )
+                        .endObject() )
+        );
+        bulkRequestBuilder.add( client.prepareIndex( "index", "fulltext", "6" )
+                .setSource( XContentFactory.jsonBuilder()
+                        .startObject()
+                        .field( "content", "蒹葭苍苍，白露为霜" )
+                        .endObject() )
+        );
+        BulkResponse bulkItemResponses = bulkRequestBuilder.get();
+        System.out.println( bulkItemResponses.hasFailures() ? "添加失败" : "添加成功" );
     }
 
     //更新文档
@@ -282,24 +305,24 @@ public class App {
          */
         XContentBuilder xContentBuilder =
                 XContentFactory.jsonBuilder()
-                .startObject()
-                    .startObject( "article" )
+                        .startObject()
+                        .startObject( "article" )
                         .startObject( "properties" )
-                            .startObject( "id" )
-                                .field( "type", "string" )
-                                .field( "store", "yes" )
-                            .endObject()
-                            .startObject( "title" )
-                                .field( "type", "string" )
-                                .field( "store", "yes" )
-                            .endObject()
-                            .startObject( "content" )
-                                .field( "type", "string" )
-                                .field( "store", "yes" )
-                            .endObject()
+                        .startObject( "id" )
+                        .field( "type", "string" )
+                        .field( "store", "yes" )
                         .endObject()
-                    .endObject()
-            .endObject();
+                        .startObject( "title" )
+                        .field( "type", "string" )
+                        .field( "store", "yes" )
+                        .endObject()
+                        .startObject( "content" )
+                        .field( "type", "string" )
+                        .field( "store", "yes" )
+                        .endObject()
+                        .endObject()
+                        .endObject()
+                        .endObject();
         PutMappingRequest mapping = Requests.putMappingRequest( "blog4" ).type( "article" ).source( xContentBuilder );
         client.admin().indices().putMapping( mapping ).get();
     }
