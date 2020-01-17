@@ -289,6 +289,20 @@ public class App {
         System.out.println( maxId.getValue() );
     }
 
+    // 多条件查询
+    @Test
+    public void multiConditionQuery(){
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must( QueryBuilders.matchQuery( "id", "4" ) )
+                .mustNot( QueryBuilders.matchQuery( "title", "小说" ) );
+        SearchResponse response = client.prepareSearch( "blog" ).setQuery( boolQueryBuilder ).get();
+        SearchHits hits = response.getHits();
+        Iterator<SearchHit> iterator = hits.iterator();
+        while ( iterator.hasNext() ) {
+            SearchHit next = iterator.next();
+            System.out.println( next.getSourceAsString() );
+        }
+    }
+
         //字段分词查询
     @Test
     public void queryString() {
