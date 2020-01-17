@@ -19,6 +19,8 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -215,6 +217,37 @@ public class App {
         while ( iterator.hasNext() ) {
             SearchHit next = iterator.next();
             System.out.println( next.getSourceAsString() );
+        }
+    }
+
+    //match query
+    @Test
+    public void matchQuery(){
+        MatchQueryBuilder queryBuilder = QueryBuilders.matchQuery( "id", "1" );
+        SearchResponse response = client.prepareSearch( "blog" ).setTypes( "article" )
+                .setQuery( queryBuilder ).get();
+        SearchHits hits = response.getHits();
+        System.out.println( "命中结果："+hits.getTotalHits() );
+        Iterator<SearchHit> iterator = hits.iterator();
+        while ( iterator.hasNext() ) {
+            SearchHit next = iterator.next();
+            System.out.println(next.getSourceAsString());
+        }
+    }
+
+    // multi match query
+    @Test
+    public void multiMatchQuery(){
+        MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery( "说", "title", "content" );
+        SearchResponse response = client.prepareSearch( "blog" )
+                .setTypes( "article" )
+                .setQuery( multiMatchQueryBuilder ).get();
+        SearchHits hits = response.getHits();
+        System.out.println( "命中结果："+hits.getTotalHits() );
+        Iterator<SearchHit> iterator = hits.iterator();
+        while ( iterator.hasNext() ) {
+            SearchHit next = iterator.next();
+            System.out.println(next.getSourceAsString());
         }
     }
 
