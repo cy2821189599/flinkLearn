@@ -19,12 +19,12 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
-import org.elasticsearch.index.query.MatchQueryBuilder;
-import org.elasticsearch.index.query.MultiMatchQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.AggregationBuilder;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.metrics.max.Max;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.junit.After;
 import org.junit.Before;
@@ -61,14 +61,14 @@ public class App {
     @Test
     public void createIndex() {
         //创建索引
-        client.admin().indices().prepareCreate( "blog4" ).get();
+        client.admin().indices().prepareCreate( "log" ).get();
     }
 
     //删除索引
     @Test
     public void deleteIndex() {
         //删除索引
-        client.admin().indices().prepareDelete( "blog" ).get();
+        client.admin().indices().prepareDelete( "log" ).get();
     }
 
     //创建文档以json形式
@@ -266,7 +266,30 @@ public class App {
         }
     }
 
-    //字段分词查询
+    // prefix query
+    @Test
+    public void prefixQuery(){
+        PrefixQueryBuilder prefixQueryBuilder = QueryBuilders.prefixQuery( "title", "git" );
+        SearchResponse response = client.prepareSearch( "blog" ).setQuery( prefixQueryBuilder ).get();
+        SearchHits hits = response.getHits();
+        System.out.println( "命中结果数量："+hits.getTotalHits() );
+        Iterator<SearchHit> iterator = hits.iterator();
+        while ( iterator.hasNext() ) {
+            SearchHit next = iterator.next();
+            System.out.println( next.getSourceAsString() );
+        }
+    }
+
+    // 聚合查询
+    @Test
+    public void aggQuery() {
+        AggregationBuilder aggregationBuilder = AggregationBuilders.max( "aggMax" ).field( "id" );
+        SearchResponse response = client.prepareSearch( "log" ).addAggregation( aggregationBuilder ).get();
+        Max maxId = response.getAggregations().get( "aggMax" );
+        System.out.println( maxId.getValue() );
+    }
+
+        //字段分词查询
     @Test
     public void queryString() {
         SearchResponse response =
@@ -357,7 +380,7 @@ public class App {
                         .startObject( "article" )
                         .startObject( "properties" )
                         .startObject( "id" )
-                        .field( "type", "string" )
+                        .field( "type", "long" )
                         .field( "store", "yes" )
                         .endObject()
                         .startObject( "title" )
@@ -371,7 +394,7 @@ public class App {
                         .endObject()
                         .endObject()
                         .endObject();
-        PutMappingRequest mapping = Requests.putMappingRequest( "blog4" ).type( "article" ).source( xContentBuilder );
+        PutMappingRequest mapping = Requests.putMappingRequest( "log" ).type( "article" ).source( xContentBuilder );
         client.admin().indices().putMapping( mapping ).get();
     }
 
