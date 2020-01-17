@@ -56,7 +56,7 @@ public class App {
     @Test
     public void createIndex() {
         //创建索引
-        client.admin().indices().prepareCreate( "blog" ).get();
+        client.admin().indices().prepareCreate( "blog4" ).get();
     }
 
     //删除索引
@@ -210,11 +210,12 @@ public class App {
         }
     }
 
-    //词条查询
+    //词条查询,默认mapping的分词器是standard 分词器，对中文支持单字符切分，如果要支持中文单词要使用ik分词器
+    //这里index索引下的mapping 属性字段使用的是ik分词器
     @Test
     public void termQuery() {
-        SearchResponse response = client.prepareSearch( "blog" ).
-                setQuery( QueryBuilders.termQuery( "content", "百" ) )
+        SearchResponse response = client.prepareSearch( "index" ).
+                setQuery( QueryBuilders.termQuery( "content", "中国" ) )
                 .get();
         SearchHits hits = response.getHits();
         System.out.println( "查询结果为：" + hits.getTotalHits() );
