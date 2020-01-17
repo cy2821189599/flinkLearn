@@ -22,6 +22,7 @@ import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
@@ -222,32 +223,46 @@ public class App {
 
     //match query
     @Test
-    public void matchQuery(){
+    public void matchQuery() {
         MatchQueryBuilder queryBuilder = QueryBuilders.matchQuery( "id", "1" );
         SearchResponse response = client.prepareSearch( "blog" ).setTypes( "article" )
                 .setQuery( queryBuilder ).get();
         SearchHits hits = response.getHits();
-        System.out.println( "命中结果："+hits.getTotalHits() );
+        System.out.println( "命中结果：" + hits.getTotalHits() );
         Iterator<SearchHit> iterator = hits.iterator();
         while ( iterator.hasNext() ) {
             SearchHit next = iterator.next();
-            System.out.println(next.getSourceAsString());
+            System.out.println( next.getSourceAsString() );
         }
     }
 
     // multi match query
     @Test
-    public void multiMatchQuery(){
+    public void multiMatchQuery() {
         MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery( "说", "title", "content" );
         SearchResponse response = client.prepareSearch( "blog" )
                 .setTypes( "article" )
                 .setQuery( multiMatchQueryBuilder ).get();
         SearchHits hits = response.getHits();
-        System.out.println( "命中结果："+hits.getTotalHits() );
+        System.out.println( "命中结果：" + hits.getTotalHits() );
         Iterator<SearchHit> iterator = hits.iterator();
         while ( iterator.hasNext() ) {
             SearchHit next = iterator.next();
-            System.out.println(next.getSourceAsString());
+            System.out.println( next.getSourceAsString() );
+        }
+    }
+
+    //range query
+    @Test
+    public void rangeQuery() {
+        RangeQueryBuilder queryBuilder = QueryBuilders.rangeQuery( "id" ).from( 1 ).to( 4 );
+        SearchResponse response = client.prepareSearch( "blog" ).setQuery( queryBuilder ).get();
+        SearchHits hits = response.getHits();
+        System.out.println( "命中结果数量：" + hits.getTotalHits() );
+        Iterator<SearchHit> iterator = hits.iterator();
+        while ( iterator.hasNext() ) {
+            SearchHit next = iterator.next();
+            System.out.println( next.getSourceAsString() );
         }
     }
 
