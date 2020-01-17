@@ -22,8 +22,12 @@ import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.filters.Filters;
+import org.elasticsearch.search.aggregations.bucket.filters.FiltersAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.filters.FiltersAggregator;
 import org.elasticsearch.search.aggregations.metrics.max.Max;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.junit.After;
@@ -300,6 +304,19 @@ public class App {
         while ( iterator.hasNext() ) {
             SearchHit next = iterator.next();
             System.out.println( next.getSourceAsString() );
+        }
+    }
+
+    //桶聚合查询
+    @Test
+    public void filterAggQuery(){
+        AggregationBuilder filters = AggregationBuilders.filters( "filters", new FiltersAggregator.KeyedFilter(
+                "百年孤独", QueryBuilders.matchQuery(
+                "content", "百年孤独" ) ) );
+        SearchResponse response = client.prepareSearch( "blog" ).addAggregation( filters ).execute().actionGet();
+        Filters aggregation = response.getAggregations().get( "filters" );
+        for ( Filters.Bucket bucket : aggregation.getBuckets() ) {
+            System.out.println( bucket.getKey() + ":" + bucket.getDocCount() );
         }
     }
 
