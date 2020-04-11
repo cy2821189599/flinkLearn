@@ -14,7 +14,7 @@ object SocketWindowWordCount {
     } catch {
       case e: Exception => {
         println("No port specified. Please run 'SocketWindowWordCount --port <port>'")
-        return
+        return -1
       }
     }
 
@@ -29,7 +29,7 @@ object SocketWindowWordCount {
     val windowCounts = text
       .flatMap { w => w.split("\\s") }
       .map { w => WordWithCount(w, 1) }
-      .keyBy("word")
+      .keyBy("word")  //相比spark比较特殊常用的算子
       .timeWindow(Time.seconds(10), Time.seconds(3))
       .sum("count")
 
