@@ -10,18 +10,20 @@
 
 
     <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <flink.version>1.8.3</flink.version>
         <scala.version>2.11.8</scala.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
-<!--        &lt;!&ndash; 导入scala的依赖 &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.scala-lang</groupId>-->
-<!--            <artifactId>scala-library</artifactId>-->
-<!--            <version>${scala.version}</version>-->
-<!--        </dependency>-->
+        <!--        &lt;!&ndash; 导入scala的依赖 &ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.scala-lang</groupId>-->
+        <!--            <artifactId>scala-library</artifactId>-->
+        <!--            <version>${scala.version}</version>-->
+        <!--        </dependency>-->
 
         <dependency>
             <groupId>org.apache.flink</groupId>

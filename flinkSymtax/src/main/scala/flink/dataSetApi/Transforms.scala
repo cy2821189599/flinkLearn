@@ -17,7 +17,7 @@ object Transforms {
     intPair.map(pair => {
       pair._1 + pair._2
     }).print()
-    val strPair = environment.fromCollection(Array(("tom", 18), ("lisi", 19), ("zhangsan", 18)))
+    val strPair = environment.fromCollection(Array(("tom", 18), ("tom", 2), ("lisi", 19), ("zhangsan", 18)))
     //groupBy算子，跟spark groupBy算子有所不同
     val res = strPair.groupBy(0).reduce { (x, y) => {
       (x._1, x._2 + y._2)
@@ -25,8 +25,8 @@ object Transforms {
     }
     res.print()
     //多个分组条件
-    val dsA = environment.fromCollection(Array(A("zhangsan", "shenzhen", 18), A("lisi", "shenzhen", 19), A("wangwu",
-      "beijing", 20), A("zhangsan", "shenzhen", 20)))
+    val dsA = environment.fromCollection(Array(A("zhangsan", "male", 18), A("lisi", "female", 19), A("wangwu",
+      "male", 20), A("zhangsan", "female", 20)))
     dsA.groupBy("name", "gender")
       .max("age")
       .print()
@@ -109,12 +109,12 @@ object Transforms {
     coG.print()
     //union
     // Rebalance 消除数据倾斜,很方便的算子
-    dsD.mapPartition(itr=>{
+    dsD.mapPartition(itr => {
       itr.foreach(println)
       itr.toList
     }).collect()
     println("---------------------")
-    dsD.rebalance().mapPartition(itr=>{
+    dsD.rebalance().mapPartition(itr => {
       itr.foreach(println)
       itr.toList
     }).collect()

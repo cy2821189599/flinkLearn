@@ -31,18 +31,18 @@ object TableDemo {
     //register tableSource,read csv file，convert to table
     //方法一
     val tableSource = CsvTableSource.builder()
-      .path("D:\\temp\\data\\1.csv")
+      .path("E:\\temp\\data\\1.csv")
       .field("customer_id", Types.STRING)
       .build()
     //创建tableSource的方法二
-    val csvTableSource = new CsvTableSource("D:\\temp\\data\\1.csv", Array("customer_id"), Array[TypeInformation[_]]
+    val csvTableSource = new CsvTableSource("E:\\temp\\data\\1.csv", Array("customer_id"), Array[TypeInformation[_]]
       (Types.STRING))
     tableEnv.registerTableSource("csvTable", csvTableSource)
     val table = tableEnv.sqlQuery("select * from csvTable")
     //      .toDataSet[Row]
     //      .print()
     //tableSink
-    val tableSink = new CsvTableSink("D:\\temp\\data\\csvsink.csv", "|", 1, WriteMode.OVERWRITE)
+    val tableSink = new CsvTableSink("E:\\temp\\data\\csvsink.csv", "|", 1, WriteMode.OVERWRITE)
     tableEnv.registerTableSink("csvTableSink", Array("customer_id"), Array[TypeInformation[_]](Types.STRING), tableSink)
     table.insertInto("csvTableSink")
     table.toDataSet[Row].print()
