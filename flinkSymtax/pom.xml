@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>xyz.kenor</groupId>
-    <artifactId>flinkLearn</artifactId>
+    <artifactId>flinkSymtax</artifactId>
     <version>1.0-SNAPSHOT</version>
 
 
@@ -14,47 +14,54 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <flink.version>1.8.3</flink.version>
         <scala.version>2.11.8</scala.version>
+        <scala.main.version>2.11</scala.main.version>
+        <hadoop-version>2.7.7</hadoop-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
-        <!--        &lt;!&ndash; 导入scala的依赖 &ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.scala-lang</groupId>-->
-        <!--            <artifactId>scala-library</artifactId>-->
-        <!--            <version>${scala.version}</version>-->
-        <!--        </dependency>-->
-
+        <!-- 导入scala的依赖 -->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/log4j/log4j -->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+        <!--flink-->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-scala_2.11</artifactId>
+            <artifactId>flink-scala_${scala.main.version}</artifactId>
             <version>${flink.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-streaming-scala_2.11</artifactId>
+            <artifactId>flink-streaming-scala_${scala.main.version}</artifactId>
             <version>${flink.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-clients_2.11</artifactId>
+            <artifactId>flink-clients_${scala.main.version}</artifactId>
             <version>${flink.version}</version>
         </dependency>
-
+        <!--kafka-->
         <!-- https://mvnrepository.com/artifact/org.apache.flink/flink-connector-kafka -->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-kafka_2.11</artifactId>
+            <artifactId>flink-connector-kafka_${scala.main.version}</artifactId>
             <version>${flink.version}</version>
         </dependency>
-
+        <!--flink table & sql-->
         <!-- https://mvnrepository.com/artifact/org.apache.flink/flink-table-api-scala-bridge -->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-table-api-scala-bridge_2.11</artifactId>
+            <artifactId>flink-table-api-scala-bridge_${scala.main.version}</artifactId>
             <version>${flink.version}</version>
         </dependency>
-
 
         <!-- https://mvnrepository.com/artifact/org.apache.flink/flink-table-common -->
         <dependency>
@@ -66,16 +73,28 @@
         <!-- https://mvnrepository.com/artifact/org.apache.flink/flink-table-planner -->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-table-planner_2.11</artifactId>
+            <artifactId>flink-table-planner_${scala.main.version}</artifactId>
             <version>${flink.version}</version>
             <!--            <scope>provided</scope>-->
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.flink/flink-runtime -->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-runtime_2.11</artifactId>
-            <version>1.8.3</version>
+            <artifactId>flink-runtime_${scala.main.version}</artifactId>
+            <version>${flink.version}</version>
             <scope>compile</scope>
+        </dependency>
+        <!--hdfs-->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-client</artifactId>
+            <version>${hadoop-version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-common -->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-common</artifactId>
+            <version>${hadoop-version}</version>
         </dependency>
 
     </dependencies>
