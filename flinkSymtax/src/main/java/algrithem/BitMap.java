@@ -9,6 +9,7 @@ import java.util.Scanner;
  * @Date 2020/1/15 11:41
  * @Version 1.0
  **/
+
 public class BitMap {
     public static void main(String[] args) {
         char[] bitMap = new char[1000000000];
