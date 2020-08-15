@@ -12,7 +12,7 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <flink.version>1.8.3</flink.version>
+        <flink.version>1.9.1</flink.version>
         <scala.version>2.11.8</scala.version>
         <scala.main.version>2.11</scala.main.version>
         <hadoop-version>2.7.7</hadoop-version>
@@ -99,9 +99,19 @@
             <version>${hadoop-version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.apache.flink/flink-shaded-hadoop2 -->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-shaded-hadoop2</artifactId>
+            <version>2.7.5-1.8.3</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>
+        <sourceDirectory>src/main/scala</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
         <plugins>
             <!--            scala编译插件-->
             <plugin>
@@ -112,7 +122,7 @@
                     <execution>
                         <goals>
                             <goal>compile</goal>
-                            <goal>testCompile</goal>
+<!--                            <goal>testCompile</goal>-->
                         </goals>
                         <configuration>
                             <args>
@@ -157,7 +167,7 @@
                             <transformers>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>my.programs.main.clazz</mainClass>
+                                    <mainClass>flink.dataSetApi.WordCount</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

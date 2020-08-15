@@ -13,7 +13,15 @@ object SocketWindowWordCount {
       ParameterTool.fromArgs(args).getInt("port")
     } catch {
       case e: Exception => {
-        println("No port specified. Please run 'SocketWindowWordCount --port <port>'")
+        println("No port specified. Please run 'SocketWindowWordCount --host <host> --port <port>'")
+        return -1
+      }
+    }
+    val host: String = try {
+      ParameterTool.fromArgs(args).get("host")
+    } catch {
+      case e: Exception => {
+        println("No port specified. Please run 'SocketWindowWordCount --host <host> --port <port>'")
         return -1
       }
     }
@@ -22,7 +30,7 @@ object SocketWindowWordCount {
     val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
 
     // get input data by connecting to the socket
-    val text = env.socketTextStream("localhost", port, '\n')
+    val text = env.socketTextStream(host, port, '\n')
 
     import org.apache.flink.api.scala._
     // parse the data, group it, window it, and aggregate the counts
@@ -30,7 +38,7 @@ object SocketWindowWordCount {
       .flatMap { w => w.split("\\s") }
       .map { w => WordWithCount(w, 1) }
       .keyBy("word")  //相比spark比较特殊常用的算子
-      .timeWindow(Time.seconds(10), Time.seconds(3))
+      .timeWindow(Time.seconds(10), Time.seconds(10))
       .sum("count")
 
     // print the results with a single thread, rather than in parallel
