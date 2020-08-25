@@ -24,7 +24,7 @@ object BufferSource {
       val gender = arr(3)
       Person(name, age, height, gender)
     }).print
-//    env.execute(this.getClass.getSimpleName)
+    env.execute(this.getClass.getSimpleName)
   }
 
   case class Person(name: String, age: Int, height: Int, gender: String)
