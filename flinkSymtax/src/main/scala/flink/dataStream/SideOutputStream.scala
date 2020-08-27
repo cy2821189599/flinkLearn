@@ -39,5 +39,6 @@ object SideOutputStream extends App {
   mainStream.getSideOutput(outputTag).print("younger->")
 
   mainStream.print("adult->")
+
   env.execute()
 }

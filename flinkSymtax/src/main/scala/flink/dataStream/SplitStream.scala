@@ -1,6 +1,6 @@
 package flink.dataStream
 
-import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
+import org.apache.flink.streaming.api.scala.{ConnectedStreams, DataStream, StreamExecutionEnvironment}
 
 /**
  * @author ：kenor
@@ -12,6 +12,7 @@ object SplitStream {
   def main(args: Array[String]): Unit = {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     import org.apache.flink.api.scala._
+    // splitStream
     val splitStream = env.socketTextStream("localhost", 1111)
       .map(info => {
         val fields = info.split(",")
@@ -24,22 +25,27 @@ object SplitStream {
       if (person.age >= 18) Seq("Adult") else Seq("young")
     })
 
-    splitStream.select("Adult").print("Adult->")
+    val adultStream: DataStream[(String, String)] = splitStream.select("Adult")
+      .map(p => (p.name, p.gender))
 
-    splitStream.select("young").print("younger->")
-    /*
-    Adult->:1> Person(tom2,19,167,男)
-    Adult->:2> Person(tom12,19,169,男)
-    Adult->:3> Person(tom12,19,169,男)
-    younger->:4> Person(tom12,15,169,男)
-    younger->:1> Person(tom12,15,169,男)
-    younger->:2> Person(tom12,15,169,男)
-    Adult->:3> Person(tom7,24,177,女)
-    Adult->:1> Person(tom10,23,165,女)
-    Adult->:2> Person(tom11,18,163,女)
-    Adult->:4> Person(tom8,19,197,男)
-    younger->:3> Person(tom12,15,169,男)
-    */
+    val youngStream = splitStream.select("young")
+      .map(p => (p.name, p.gender, p.height))
+    // connectStream
+    val connectStream: ConnectedStreams[(String, String), (String, String, Int)] = adultStream.connect(youngStream)
+    connectStream.map(
+      adult => {
+        (adult._1, adult._2)
+      },
+      young => {
+        (young._1, young._2, young._3)
+      }
+    ).print()
+
+    //unionStream
+    val young = splitStream.select("young")
+    val adult = splitStream.select("Adult")
+    young.union(adult).print("union=>")
+
     env.execute()
   }
 
