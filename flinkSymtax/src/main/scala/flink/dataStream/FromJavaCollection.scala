@@ -1,6 +1,6 @@
 package flink.dataStream
 
-import java.util.Collections
+import java.util.{Collections, Properties}
 
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import pojo.Person
@@ -17,13 +17,19 @@ object FromJavaCollection extends App {
   val container = new java.util.LinkedList[Person]()
   Collections.addAll(container,
     new Person(1, "tom", "male"),
-    new Person(2, "lisa", "female"))
+    new Person(2, "root", "female"),
+    new Person(3, "lisa", "female"))
 
   import org.apache.flink.api.scala._
   import scala.collection.JavaConversions._
 
-  env.fromCollection(container).print()
+  val props = new Properties()
+  props.load(this.getClass.getClassLoader.getResourceAsStream("kafkaProducer.properties"))
+  env.fromCollection(container)
+    .flatMap(new MyRichFunction("my-topic", props))
+    .print("general user=>")
 
   env.execute(this.getClass.getSimpleName)
+
 
 }
