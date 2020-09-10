@@ -16,6 +16,7 @@ import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 object JDBCSink {
   def main(args: Array[String]): Unit = {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
+
     import org.apache.flink.api.scala._
     val result = env.socketTextStream("localhost", 8888)
       .filter(_.nonEmpty)

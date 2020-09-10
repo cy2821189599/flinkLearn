@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets
 import java.util.Properties
 
 import org.apache.flink.api.common.serialization.SimpleStringSchema
+import org.apache.flink.runtime.state.filesystem.FsStateBackend
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
 import org.apache.flink.streaming.connectors.kafka.{FlinkKafkaConsumer, FlinkKafkaProducer, KafkaSerializationSchema}
 import org.apache.kafka.clients.producer.ProducerRecord
@@ -18,7 +19,9 @@ import org.apache.kafka.clients.producer.ProducerRecord
 object KafkaSink {
   def main(args: Array[String]): Unit = {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
-
+    // add checkpoint
+    env.enableCheckpointing(60)
+    env.setStateBackend(new FsStateBackend("hdfs://ns1/flink/checkpoint"))
     import org.apache.flink.api.scala._
 
     val consumerProps = new Properties()
