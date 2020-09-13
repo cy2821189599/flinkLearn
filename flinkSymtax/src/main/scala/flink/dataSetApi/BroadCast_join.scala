@@ -11,7 +11,7 @@ import scala.collection.mutable
 /**
  * @author ：kenor
  * @date ：Created in 2020/9/10 23:21
- * @description：
+ * @description： boundedStream
  * @version: 1.0
  */
 object BroadCast_join {
