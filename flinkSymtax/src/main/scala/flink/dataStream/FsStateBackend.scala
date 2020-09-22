@@ -1,18 +1,28 @@
-package flink.dataSqlApi
+package flink.dataStream
+
+import java.util.concurrent.TimeUnit
 
 import flink.dataStream.KafkaSink.Person
+import org.apache.flink.api.common.restartstrategy.RestartStrategies
+import org.apache.flink.api.common.time.Time
+import org.apache.flink.runtime.state.filesystem.FsStateBackend
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 
 /**
  * @author ：kenor
- * @date ：Created in 2020/9/21 23:53
+ * @date ：Created in 2020/9/22 22:47
  * @description：
  * @version: 1.0
  */
-object AggSum {
+
+object FsStateBackend {
   def main(args: Array[String]): Unit = {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     import org.apache.flink.api.scala._
+    //suggest config in the config file
+    env.setStateBackend(new FsStateBackend("hdfs://ns1/flink/state/fs"))
+
+    env.enableCheckpointing(5000)
 
     env.socketTextStream("localhost", 9999)
       .filter(_.nonEmpty)
@@ -35,6 +45,8 @@ object AggSum {
       .print()
 
     env.execute(this.getClass.getSimpleName)
+    env.setRestartStrategy(RestartStrategies.fixedDelayRestart(10,
+      Time.of(10, TimeUnit.SECONDS)))
   }
 
 }

@@ -1,6 +1,7 @@
 package flink.dataStream
 
 import flink.dataStream.KafkaSink.Person
+import org.apache.flink.runtime.state.memory.MemoryStateBackend
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 
 /**
@@ -13,7 +14,7 @@ object ValueState {
   def main(args: Array[String]): Unit = {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     import org.apache.flink.api.scala._
-
+    
     env.socketTextStream("localhost", 9999)
       .filter(_.nonEmpty)
       .map(info => {
