@@ -12,10 +12,12 @@ public class Person {
     private String name;
     private String gender;
 
+
     public Person(Integer id, String name, String gender) {
         this.id = id;
         this.name = name;
         this.gender = gender;
+        System.out.println("2222");
     }
 
     public Integer getId() {

@@ -138,6 +138,12 @@
             <version>5.1.35</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.rocksdb</groupId>
+            <artifactId>rocksdbjni</artifactId>
+            <version>5.11.3</version>
+        </dependency>
+
     </dependencies>
 
     <build>
