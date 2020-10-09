@@ -24,7 +24,7 @@ object RocksDBStateBackend {
       true)
     env.setStateBackend(rocksDBStateBackend)
 
-//    print(System.getProperty("java.io.tmpdir")) //default storage path
+    print(System.getProperty("java.io.tmpdir")) //default storage path
     rocksDBStateBackend.setDbStoragePath("E:\\temp\\rocksdb")
 
     env.enableCheckpointing(10000)
