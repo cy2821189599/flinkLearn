@@ -15,7 +15,7 @@
         <flink.version>1.9.1</flink.version>
         <scala.version>2.11.8</scala.version>
         <scala.main.version>2.11</scala.main.version>
-        <hadoop-version>2.7.7</hadoop-version>
+        <hadoop-version>3.2.3</hadoop-version>
         <jedis.version>2.9.0</jedis.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
